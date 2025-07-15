@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>头号玩家 · 队员查询系统</title>
   <style>
+
     body {
       font-family: "Helvetica Neue", sans-serif;
       background: #f4f6f9;
@@ -20,6 +21,18 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+
+    .section {
+  background: #eef3f9;
+  border-left: 6px solid #2d89ef;
+  padding: 15px 20px;
+  margin-top: 30px;
+  border-radius: 8px;
+}
+.section h4 {
+  margin-top: 0;
+}
+
     video {
       max-width: 100%;
       height: auto;
@@ -126,11 +139,13 @@ function search() {
     normalizeId(p["证件号"]) !== cleaned
   );
 
-  let html = `
-    <h3>🎉欢迎来到· 头号玩家夏令营！</h3>
-    <p>你好，<strong>${name}</strong>！</p>
-  
-    <p>🏠 你的房间号是：<strong>${room}</strong></p>
+let html = `
+  <h3>🎉 欢迎来到· 头号玩家夏令营！</h3>
+  <p>你好，<strong>${name}</strong>！</p>
+
+  <div class="section">
+    <h4>🏠 房间信息</h4>
+    <p>你的房间号是：<strong>${room}</strong></p>
     <p>请前往前台领取房卡，并告知室友以免无法进入。</p>
     <h4>🛏️ 以下是你房间的室友：</h4>
     ${roommates.length > 0 ? roommates.map(r => `
@@ -139,11 +154,12 @@ function search() {
         📞 <a class="call-link" href="tel:${r["联系电话"]}">${r["联系电话"]}</a>
       </div>
     `).join("") : `<p>这次分到的是单人公寓，恭喜！</p>`}
+  </div>
 
-
-
+  <div class="section">
+    <h4>👥 队伍信息</h4>
     <p>你所在的队是：<strong>${group}</strong></p>
-    <h4>👨‍🏫 我是队长，有事请联系：</h4>
+    <h4>👨‍🏫 队长联系方式：</h4>
     ${mentors.map(m => `
       <div class="card">
         <strong>${m["姓名（中文）"]}</strong><br>
@@ -151,18 +167,15 @@ function search() {
       </div>
     `).join("")}
 
-    <h4>👥 以下是我们的队员：</h4>
+    <h4>👬 其他队员：</h4>
     ${members.map(m => `
       <div class="card">
         ${m["姓名（中文）"]}（${m["所属堂点"]}）
       </div>
     `).join("")}
+  </div>
+`;
 
-
-  `;
-
-  resultDiv.innerHTML = html;
-}
 
   </script>
 </body>
