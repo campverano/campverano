@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>头号玩家 · 夏令营队员查询系统</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    video {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      display: block;
+      margin: 0 auto;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input[type="text"] {
+      padding: 12px;
+      width: 90%;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #2d89ef;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result {
+      text-align: left;
+      margin-top: 30px;
+    }
+    .card {
+      background: #f1f3f6;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+      word-break: break-word;
+    }
+    a.call-link {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    @media (max-width: 600px) {
+      input[type="text"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <video autoplay loop muted playsinline preload="auto">
+      <source src="static/your-video.mp4" type="video/mp4">
+      您的浏览器不支持视频播放。
+    </video>
+
+    <h2 style="text-align:center;">头号玩家 · 夏令营队员查询系统</h2>
+    <form onsubmit="event.preventDefault(); search();">
+      <input type="text" id="idInput" placeholder="请输入您的证件号" required>
+      <button type="submit">查询</button>
+    </form>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    let data = [];
+
+    fetch("static/data.json")
+      .then(res => res.json())
+      .then(json => data = json);
+
+    function normalizeId(id) {
+      return id.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+    }
+
+    function search() {
+      const input = document.getElementById("idInput").value.trim();
+      const cleaned = normalizeId(input);
+      const person = data.find(d => normalizeId(d["证件号"]) === cleaned);
+      const resultDiv = document.getElementById("result");
+
+      if (!person) {
+        resultDiv.innerHTML = `<p>未找到该证件号，请检查输入。</p>`;
+        return;
+      }
+
+      const group = person["队别"];
+      const room = person["房间号"];
+      const name = person["姓名（中文）"];
+
+      const sameGroup = data.filter(p => p["队别"] === group);
+      const mentors = sameGroup.filter(p => p["身份"] === "队长");
+      const members = sameGroup.filter(p => p["身份"] === "队员" && normalizeId(p["证件号"]) !== cleaned);
+
+      let html = `
+        <h3>👤 欢迎来到2025年头号玩家夏令营！你好，${name}！</h3>
+        <p>欢迎你加入我们！你所在的队是：<strong>${group}</strong></p>
+        <p>🏠 这期间你的房间号是：<strong>${room}</strong></p>
+
+        <h4>👨‍🏫 我是你的队长，有事请联系我：</h4>
+        ${mentors.map(m => `
+          <div class="card">
+            <strong>${m["姓名（中文）"]}</strong><br>
+            📞 <a class="call-link" href="tel:${m["联系电话"]}">${m["联系电话"]}</a>
+          </div>
+        `).join("")}
+
+        <h4>👥 以下是我们的队员：</h4>
+        ${members.map(m => `
+          <div class="card">
+            ${m["姓名（中文）"]}（${m["所属堂点"]}）
+          </div>
+        `).join("")}
+      `;
+
+      resultDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
