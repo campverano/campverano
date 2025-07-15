@@ -1,12 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>头号玩家 · 队员查询系统</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>头号玩家 · 夏令营队员查询系统</title>
   <style>
-
     body {
       font-family: "Helvetica Neue", sans-serif;
       background: #f4f6f9;
@@ -21,24 +19,12 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
-    .section {
-  background: #eef3f9;
-  border-left: 6px solid #2d89ef;
-  padding: 15px 20px;
-  margin-top: 30px;
-  border-radius: 8px;
-}
-.section h4 {
-  margin-top: 0;
-}
-
     video {
       max-width: 100%;
       height: auto;
       border-radius: 10px;
       display: block;
-      margin: 0 auto;
+      margin: 0 auto 20px;
     }
     form {
       display: flex;
@@ -47,9 +33,11 @@
     }
     input[type="text"] {
       padding: 12px;
-      width: 90%;
+      width: 100%;
       font-size: 16px;
       margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     button {
       padding: 12px 24px;
@@ -80,6 +68,18 @@
       border-radius: 5px;
       margin-top: 5px;
     }
+    .section {
+      background: #eef3f9;
+      border-left: 6px solid #2d89ef;
+      padding: 15px 20px;
+      margin-top: 30px;
+      border-radius: 8px;
+    }
+    .section h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #2d3e50;
+    }
     @media (max-width: 600px) {
       input[type="text"] {
         width: 100%;
@@ -94,9 +94,9 @@
       您的浏览器不支持视频播放。
     </video>
 
-    <h2 style="text-align:center;">寻找队员 · 获取房间信息</h2>
+    <h2 style="text-align:center;">头号玩家 · 夏令营队员查询系统</h2>
     <form onsubmit="event.preventDefault(); search();">
-      <input type="text" id="idInput" placeholder="请输入您的证件号/居留号" required>
+      <input type="text" id="idInput" placeholder="请输入您的证件号" required />
       <button type="submit">查询</button>
     </form>
 
@@ -114,69 +114,65 @@
       return id.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
     }
 
-function search() {
-  const input = document.getElementById("idInput").value.trim();
-  const cleaned = normalizeId(input);
-  const person = data.find(d => normalizeId(d["证件号"]) === cleaned);
-  const resultDiv = document.getElementById("result");
+    function search() {
+      const input = document.getElementById("idInput").value.trim();
+      const cleaned = normalizeId(input);
+      const person = data.find(d => normalizeId(d["证件号"]) === cleaned);
+      const resultDiv = document.getElementById("result");
 
-  if (!person) {
-    resultDiv.innerHTML = `<p>未找到该证件号/居留号，请检查输入。</p>`;
-    return;
-  }
+      if (!person) {
+        resultDiv.innerHTML = `<p>未找到该证件号，请检查输入。</p>`;
+        return;
+      }
 
-  const group = person["队别"];
-  const room = person["房间号"];
-  const name = person["姓名（中文）"];
+      const group = person["队别"];
+      const room = person["房间号"];
+      const name = person["姓名（中文）"];
 
-  const sameGroup = data.filter(p => p["队别"] === group);
-  const mentors = sameGroup.filter(p => p["身份"] === "队长");
-  const members = sameGroup.filter(p => p["身份"] === "队员" && normalizeId(p["证件号"]) !== cleaned);
+      const sameGroup = data.filter(p => p["队别"] === group);
+      const mentors = sameGroup.filter(p => p["身份"] === "队长");
+      const members = sameGroup.filter(p => p["身份"] === "队员" && normalizeId(p["证件号"]) !== cleaned);
+      const roommates = data.filter(p => p["房间号"] === room && normalizeId(p["证件号"]) !== cleaned);
 
-  // ✅ 同房间其他人（不包括本人）
-  const roommates = data.filter(p =>
-    p["房间号"] === room &&
-    normalizeId(p["证件号"]) !== cleaned
-  );
+      let html = `
+        <h3>🎉 欢迎来到头号玩家夏令营！</h3>
+        <p>你好，<strong>${name}</strong>！</p>
 
-let html = `
-  <h3>🎉 欢迎来到· 头号玩家夏令营！</h3>
-  <p>你好，<strong>${name}</strong>！</p>
+        <div class="section">
+          <h4>🏠 房间信息</h4>
+          <p>你被分配到了 <strong>${room}</strong> 房间</p>
+          <h4>🛏️ 同房间人员：</h4>
+          ${roommates.length > 0 ? roommates.map(r => `
+            <div class="card">
+              <strong>${r["姓名（中文）"]}</strong><br>
+              📞 <a class="call-link" href="tel:${r["联系电话"]}">${r["联系电话"]}</a>
+            </div>
+          `).join("") : `<p>暂无同房记录。</p>`}
+        </div>
 
-  <div class="section">
-    <h4>🏠 房间信息</h4>
-    <p>你的房间号是：<strong>${room}</strong></p>
-    <p>请前往前台领取房卡，并告知室友以免无法进入。</p>
-    <h4>🛏️ 以下是你房间的室友：</h4>
-    ${roommates.length > 0 ? roommates.map(r => `
-      <div class="card">
-        <strong>${r["姓名（中文）"]}</strong><br>
-        📞 <a class="call-link" href="tel:${r["联系电话"]}">${r["联系电话"]}</a>
-      </div>
-    `).join("") : `<p>这次分到的是单人公寓，恭喜！</p>`}
-  </div>
+        <div class="section">
+          <h4>🧢 队伍信息</h4>
+          <p>你所在的队是：<strong>${group}</strong></p>
 
-  <div class="section">
-    <h4>👥 队伍信息</h4>
-    <p>你所在的队是：<strong>${group}</strong></p>
-    <h4>👨‍🏫 队长联系方式：</h4>
-    ${mentors.map(m => `
-      <div class="card">
-        <strong>${m["姓名（中文）"]}</strong><br>
-        📞 <a class="call-link" href="tel:${m["联系电话"]}">${m["联系电话"]}</a>
-      </div>
-    `).join("")}
+          <h4>👨‍🏫 队长联系方式：</h4>
+          ${mentors.map(m => `
+            <div class="card">
+              <strong>${m["姓名（中文）"]}</strong><br>
+              📞 <a class="call-link" href="tel:${m["联系电话"]}">${m["联系电话"]}</a>
+            </div>
+          `).join("")}
 
-    <h4>👬 其他队员：</h4>
-    ${members.map(m => `
-      <div class="card">
-        ${m["姓名（中文）"]}（${m["所属堂点"]}）
-      </div>
-    `).join("")}
-  </div>
-`;
+          <h4>👬 同组队员（不含本人）：</h4>
+          ${members.map(m => `
+            <div class="card">
+              ${m["姓名（中文）"]}（${m["所属堂点"]}）
+            </div>
+          `).join("")}
+        </div>
+      `;
 
-
+      resultDiv.innerHTML = html;
+    }
   </script>
 </body>
 </html>
