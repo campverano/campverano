@@ -147,10 +147,11 @@ function search() {
       </div>
     `).join("")}
 
-    <h4>🛏️ 以下是与你同房的队员：</h4>
+    <h4>🛏️ 以下是与你同房间的室友：</h4>
     ${roommates.length > 0 ? roommates.map(r => `
       <div class="card">
-        ${r["姓名（中文）"]}（📞 ${r["联系电话"] || "无号码"}）
+        <strong>${r["姓名（中文）"]}</strong><br>
+        📞 <a class="call-link" href="tel:${r["联系电话"]}">${r["联系电话"]}</a>
       </div>
     `).join("") : `<p>暂时没有同房记录。</p>`}
   `;
