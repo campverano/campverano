@@ -101,49 +101,63 @@
       return id.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
     }
 
-    function search() {
-      const input = document.getElementById("idInput").value.trim();
-      const cleaned = normalizeId(input);
-      const person = data.find(d => normalizeId(d["证件号"]) === cleaned);
-      const resultDiv = document.getElementById("result");
+function search() {
+  const input = document.getElementById("idInput").value.trim();
+  const cleaned = normalizeId(input);
+  const person = data.find(d => normalizeId(d["证件号"]) === cleaned);
+  const resultDiv = document.getElementById("result");
 
-      if (!person) {
-        resultDiv.innerHTML = `<p>未找到该证件号，请检查输入。</p>`;
-        return;
-      }
+  if (!person) {
+    resultDiv.innerHTML = `<p>未找到该证件号，请检查输入。</p>`;
+    return;
+  }
 
-      const group = person["队别"];
-      const room = person["房间号"];
-      const name = person["姓名（中文）"];
+  const group = person["队别"];
+  const room = person["房间号"];
+  const name = person["姓名（中文）"];
 
-      const sameGroup = data.filter(p => p["队别"] === group);
-      const mentors = sameGroup.filter(p => p["身份"] === "队长");
-      const members = sameGroup.filter(p => p["身份"] === "队员" && normalizeId(p["证件号"]) !== cleaned);
+  const sameGroup = data.filter(p => p["队别"] === group);
+  const mentors = sameGroup.filter(p => p["身份"] === "队长");
+  const members = sameGroup.filter(p => p["身份"] === "队员" && normalizeId(p["证件号"]) !== cleaned);
 
-      let html = `
-        <h3>🎉欢迎来到2025年|头号玩家夏令营！</h3>
-        <p>你好，<strong>${name}</strong>！</p>
-        <p>欢迎你加入我们！你所在的队是：<strong>${group}</strong></p>
-        <p>🏠 这期间你的房间号是：<strong>${room}</strong></p>
+  // ✅ 同房间其他人（不包括本人）
+  const roommates = data.filter(p =>
+    p["房间号"] === room &&
+    normalizeId(p["证件号"]) !== cleaned
+  );
 
-        <h4>👨‍🏫 我是你的队长，有事请联系我：</h4>
-        ${mentors.map(m => `
-          <div class="card">
-            <strong>${m["姓名（中文）"]}</strong><br>
-            📞 <a class="call-link" href="tel:${m["联系电话"]}">${m["联系电话"]}</a>
-          </div>
-        `).join("")}
+  let html = `
+    <h3>🎉欢迎来到2025年|头号玩家夏令营！</h3>
+    <p>你好，<strong>${name}</strong>！</p>
+    <p>欢迎你加入我们！你所在的队是：<strong>${group}</strong></p>
+    <p>🏠 这期间你的房间号是：<strong>${room}</strong></p>
 
-        <h4>👥 以下是我们的队员：</h4>
-        ${members.map(m => `
-          <div class="card">
-            ${m["姓名（中文）"]}（${m["所属堂点"]}）
-          </div>
-        `).join("")}
-      `;
+    <h4>👨‍🏫 我是你的队长，有事请联系我：</h4>
+    ${mentors.map(m => `
+      <div class="card">
+        <strong>${m["姓名（中文）"]}</strong><br>
+        📞 <a class="call-link" href="tel:${m["联系电话"]}">${m["联系电话"]}</a>
+      </div>
+    `).join("")}
 
-      resultDiv.innerHTML = html;
-    }
+    <h4>👥 以下是我们的队员：</h4>
+    ${members.map(m => `
+      <div class="card">
+        ${m["姓名（中文）"]}（${m["所属堂点"]}）
+      </div>
+    `).join("")}
+
+    <h4>🛏️ 以下是与你同房的队员：</h4>
+    ${roommates.length > 0 ? roommates.map(r => `
+      <div class="card">
+        ${r["姓名（中文）"]}（📞 ${r["联系电话"] || "无号码"}）
+      </div>
+    `).join("") : `<p>暂时没有同房记录。</p>`}
+  `;
+
+  resultDiv.innerHTML = html;
+}
+
   </script>
 </body>
 </html>
