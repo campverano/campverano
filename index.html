@@ -117,10 +117,10 @@
     function floorMessage(room) {
       const s = String(room).trim();
       // 100–199 → 1楼；2xx → 2楼；3xx → 3楼；4xx → 4楼
-      if (/^1\d{2}/.test(s)) return "请去 1 楼领取房卡。";
-      if (/^2\d{2}/.test(s)) return "请去 2 楼领取房卡。";
-      if (/^3\d{2}/.test(s)) return "请去 3 楼领取房卡。";
-      if (/^4\d{2}/.test(s)) return "请去 4 楼领取房卡。";
+      if (/^1\d{2}/.test(s)) return "请直接去 1 楼领取房卡，放置行李。";
+      if (/^2\d{2}/.test(s)) return "请直接去 2 楼领取房卡，放置行李。";
+      if (/^3\d{2}/.test(s)) return "请直接去 3 楼领取房卡，放置行李。";
+      if (/^4\d{2}/.test(s)) return "请直接去 4 楼领取房卡，放置行李。";
       return "";
     }  
     
