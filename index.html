@@ -113,7 +113,17 @@
     function normalizeId(id) {
       return id.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
     }
-
+    
+    function floorMessage(room) {
+      const s = String(room).trim();
+      // 100–199 → 1楼；2xx → 2楼；3xx → 3楼；4xx → 4楼
+      if (/^1\d{2}/.test(s)) return "请去 1 楼领取房卡。";
+      if (/^2\d{2}/.test(s)) return "请去 2 楼领取房卡。";
+      if (/^3\d{2}/.test(s)) return "请去 3 楼领取房卡。";
+      if (/^4\d{2}/.test(s)) return "请去 4 楼领取房卡。";
+      return "";
+    }  
+    
     function search() {
       const input = document.getElementById("idInput").value.trim();
       const cleaned = normalizeId(input);
@@ -133,6 +143,7 @@
       const mentors = sameGroup.filter(p => p["身份"] === "队长");
       const members = sameGroup.filter(p => p["身份"] === "队员" && normalizeId(p["证件号"]) !== cleaned);
       const roommates = data.filter(p => p["房间号"] === room && normalizeId(p["证件号"]) !== cleaned);
+      const floorMsg = floorMessage(room);
 
       let html = `
         <h3>🎉 欢迎来到 · 头号玩家夏令营！</h3>
@@ -141,7 +152,8 @@
         <div class="section">
           <h4>🏠 房间信息</h4>
           <p>你的房间号是 <strong>${room}</strong> </p>
-          <p>请前往前台领取房卡，并告知室友以免无法进入。</p>
+          ${floorMsg ? `<p>${floorMsg}</p>` : ""}          
+          <p>请前往对应楼层领取房卡，并告知室友以免无法进入。</p>
           <h4>🛏️ 同房间人员：</h4>
           ${roommates.length > 0 ? roommates.map(r => `
             <div class="card">
