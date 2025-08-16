@@ -147,14 +147,14 @@
 
       let html = `
         <h3>🎉 欢迎来到 · 头号玩家夏令营！</h3>
-        <p>你好，<strong>${name}</strong>！</p>
+        <p>你好玩家，<strong>${name}</strong>！</p>
         <p>请优先去对应房间楼层放置行李，名牌和手册之后会由队长统一发放。</p>
         
         <div class="section">
           <h4>🏠 房间信息</h4>
           <p>你的房间号是 <strong>${room}</strong> </p>
           ${floorMsg ? `<p>${floorMsg}</p>` : ""}          
-          <p>每个房间只有两张房卡哦～先领到的人员请和室友打声招呼，别让他们进不了门。</p>
+          <p>每个房间只有两张房卡哦～先领到的玩家请和室友打声招呼，别让他们进不了门。</p>
           <h4>🛏️ 同房间人员：</h4>
           ${roommates.length > 0 ? roommates.map(r => `
             <div class="card">
