@@ -138,6 +138,7 @@
       const group = person["队别"];
       const room = person["房间号"];
       const name = person["姓名（中文）"];
+      const isLeader = person["身份"] === "队长"; // 🔑 新增
 
       const sameGroup = data.filter(p => p["队别"] === group);
       const mentors = sameGroup.filter(p => p["身份"] === "队长");
