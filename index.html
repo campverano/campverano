@@ -167,6 +167,7 @@
           ${members.map(m => `
             <div class="card">
               ${m["姓名（中文）"]}（${m["所属堂点"]}）
+              ${person["身份"] === "队长" ? `<br>📞 <a class="call-link" href="tel:${m["联系电话"]}">${m["联系电话"]}</a>` : ""}
             </div>
           `).join("")}
         </div>
