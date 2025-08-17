@@ -96,7 +96,7 @@
 
     <h2 style="text-align:center;">寻找队员 · 获取房间信息</h2>
     <form onsubmit="event.preventDefault(); search();">
-      <input type="text" id="idInput" placeholder="请输入您的居留号或证件号" required />
+      <input type="text" id="idInput" placeholder="请输入您的居留号或护照号" required />
       <button type="submit">查询</button>
     </form>
 
@@ -131,7 +131,7 @@
       const resultDiv = document.getElementById("result");
 
       if (!person) {
-        resultDiv.innerHTML = `<p>未找到该居留号，请检查输入。</p>`;
+        resultDiv.innerHTML = `<p>未找到该号码，请重新输入登记的号码或者联系我们工作人员。微信：549794201</p>`;
         return;
       }
 
